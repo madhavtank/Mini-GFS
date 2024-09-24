@@ -1,0 +1,44 @@
+version: "3"
+services:
+  master_server:
+    build:
+      context: master
+      dockerfile: primary.dockerfile
+    network_mode: host
+    volumes:
+      - ./master:/app
+    stdin_open: true # Allows for interactive input
+    tty: true
+
+  secondary_server:
+    build:
+      context: master
+      dockerfile: secondary.dockerfile
+    network_mode: host
+    depends_on:
+      - master_server
+    volumes:
+      - ./master:/app
+    stdin_open: true # Allows for interactive input
+    tty: true
+
+  chunk_server:
+    build:
+      context: ./chunkserver
+      dockerfile: chunkserver.dockerfile
+    network_mode: host
+    volumes:
+      - ./chunkserver:/app
+    stdin_open: true # Allows for interactive input
+    tty: true # Required for interactive output
+
+  client:
+    build:
+      context: ./client
+      dockerfile: client.dockerfile
+    volumes:
+      - ./client:/app
+    network_mode: host
+    stdin_open: true # Allows for interactive input
+    tty: true # Required for interactive output
+
